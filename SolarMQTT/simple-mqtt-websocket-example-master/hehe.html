@@ -1,0 +1,244 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Monitoring LoRa</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="config.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+	var chart; // global variuable for chart
+	var dataTopics = new Array();
+    var dataTopics1 = new Array();
+//mqtt broker 
+	var client = new Paho.MQTT.Client(MQTTbroker, MQTTport,'/ws',
+				"myclientid_" + parseInt(Math.random() * 100, 10));
+	client.onMessageArrived = onMessageArrived;
+	client.onConnectionLost = onConnectionLost;
+	//connect to broker is at the bottom of the init() function !!!!
+	
+
+//mqtt connecton options including the mqtt broker subscriptions
+	var options = {
+		timeout: 3,
+		onSuccess: function () {
+			console.log("mqtt connected");
+			// Connection succeeded; subscribe to our topics
+            client.subscribe(MQTTsubTopic, {qos: 1});
+            client.subscribe(MQTTsubTopic1, {qos: 1});
+		},
+		onFailure: function (message) {
+			console.log("Connection failed, ERROR: " + message.errorMessage);
+			//window.setTimeout(location.reload(),20000); //wait 20seconds before trying to connect again.
+		}
+	};
+
+//can be used to reconnect on connection lost
+	function onConnectionLost(responseObject) {
+		console.log("connection lost: " + responseObject.errorMessage);
+		//window.setTimeout(location.reload(),20000); //wait 20seconds before trying to connect again.
+	};
+
+//what is done when a message arrives from the broker
+	function onMessageArrived(message) {
+		console.log(message.destinationName, '',message.payloadString);
+
+		//check if it is a new topic, if not add it to the array
+		if (dataTopics.indexOf(message.destinationName) < 0){
+		    
+		    dataTopics.push(message.destinationName); //add new topic to array
+		    var y = dataTopics.indexOf(message.destinationName); //get the index no
+		    var a = dataTopics.indexOf(message.destinationName); //get the index no
+		
+		    //create new data series for the chart
+			var newseries = {
+		            id: y,
+		            name: message.destinationName,
+		            data: [],
+		            visible: false
+					};
+			var newseries1 = {
+					id: a,
+					name: message.destinationName,
+					data: [],
+					visible: false
+					};
+
+			chart.addSeries(newseries); //add the series
+			chart1.addSeries(newseries1); //add the series
+		    
+            };
+
+		 
+		var y = dataTopics.indexOf(message.destinationName); //get the index no of the topic from the array
+		var a = dataTopics.indexOf(message.destinationName); //get the index no of the topic from the array
+		var myEpoch = new Date().getTime(); //get current epoch time
+		var thenum = message.payloadString.replace( /^\D+/g, ''); //remove any text spaces from the message
+		var plotMqtt = [myEpoch, Number(thenum)]; //create the array
+		if (isNumber(thenum)) { //check if it is a real number and not text
+			console.log('is a propper number, will send to chart.')
+			plot(plotMqtt, y);	//send it to the plot function
+			plot1(plotMqtt, a);	//send it to the plot function
+		};
+	};
+	function send_mqtt_msg(state) {
+	// Send an MQTT message
+		//MQTTbroker = document.getElementById("MQTTbroker").value;
+		//MQTTport = Number(document.getElementById("MQTTport").value);
+		if (state==1) {
+		client = new Paho.MQTT.Client(MQTTbroker, MQTTport,"");
+		client.connect({onSuccess:onConnect_ON});
+		document.getElementById("pubmsg").innerHTML = "Trying to connect...";
+	}
+
+		if (state==0){
+			client = new Paho.MQTT.Client(MQTTbroker, MQTTport,"");
+			client.connect({onSuccess:onConnect_OFF});
+			document.getElementById("pubmsg").innerHTML = "Trying to connect...";
+		}	
+		
+	}
+	function onConnect_ON() {
+		document.getElementById("pubmsg").innerHTML = "New connection made...";
+
+		var MQTTpubTopic= "application/1/device/e0c23bb4a2ebc447/tx"; 
+		var mqtt_msg ='{     "confirmed": true,     "fPort": 3,     "data": "MQ==" }';
+		message = new Paho.MQTT.Message(mqtt_msg);
+		message.destinationName = MQTTpubTopic;
+		client.send(message);
+		document.getElementById("pubmsg").innerHTML = "topic:" + MQTTpubTopic  + " " + mqtt_msg + " ...sent";
+	}  
+	function onConnect_OFF(){
+		document.getElementById("pubmsg").innerHTML = "New connection made...";
+
+		var MQTTpubTopic= "application/1/device/e0c23bb4a2ebc447/tx"; 
+		var mqtt_msg ='{     "confirmed": true,     "fPort": 3,     "data": "MA==" }';
+		message = new Paho.MQTT.Message(mqtt_msg);
+		message.destinationName = MQTTpubTopic;
+		client.send(message);
+		document.getElementById("pubmsg").innerHTML = "topic:" + MQTTpubTopic  + " " + mqtt_msg + " ...sent";
+	}
+//check if a real number	
+	function isNumber(n) {
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	};
+
+//function that is called once the document has loaded
+	function init() {
+
+		//i find i have to set this to false if i have trouble with timezones.
+		Highcharts.setOptions({
+			global: {
+				useUTC: false
+			}
+		});
+
+		// Connect to MQTT broker
+		client.connect(options);
+
+	};
+
+
+//this adds the plots to the chart	
+    function plot(point, chartno) {
+    	console.log(point);
+    	
+	        var series = chart.series[0],
+	            shift = series.data.length > 20; // shift if the series is 
+	                                             // longer than 20
+			// add the point
+	        chart.series[chartno].addPoint(point, true, shift);  
+
+	};
+
+	function plot1(point, chartno) {
+    	console.log(point);
+    	
+	        var series1 = chart1.series[0],
+	            shift = series.data.length > 20; // shift if the series is 
+	                                             // longer than 20
+			// add the point
+	        chart1.series[chartno].addPoint(point, true, shift);  
+
+	};
+
+//settings buat charttt
+	$(document).ready(function() {
+	    chart = new Highcharts.Chart({
+	        chart: {
+	            renderTo: 'container',
+	            defaultSeriesType: 'spline'
+	        },
+	        title: {
+	            text: 'Temperature and Humidity'
+	        },
+	        subtitle: {
+                                text: 'broker: ' + MQTTbroker + ' | port: ' + MQTTport + ' | topic : ' + MQTTsubTopic + '&'  + MQTTsubTopic1
+                        },
+	        xAxis: {
+	            type: 'datetime',
+	            tickPixelInterval: 150,
+	            maxZoom: 20 * 1000
+	        },
+	        yAxis: {
+	            minPadding: 0.2,
+	            maxPadding: 0.2,
+	            title: {
+	                text: 'Value',
+	                margin: 80
+	            }
+	        },
+	        series: []
+	    });        
+		chart1= new Highcharts.Chart({
+	        chart: {
+	            renderTo: 'container1',
+	            defaultSeriesType: 'spline'
+	        },
+	        title: {
+	            text: 'Temperature and Humidity'
+	        },
+	        subtitle: {
+                                text: 'broker: ' + MQTTbroker + ' | port: ' + MQTTport + ' | topic : ' + MQTTsubTopic + '&'  + MQTTsubTopic1
+                        },
+	        xAxis: {
+	            type: 'datetime',
+	            tickPixelInterval: 150,
+	            maxZoom: 20 * 1000
+	        },
+	        yAxis: {
+	            minPadding: 0.2,
+	            maxPadding: 0.2,
+	            title: {
+	                text: 'Value',
+	                margin: 80
+	            }
+	        },
+	        series: []
+	    });        
+	});
+
+</script>
+
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+
+</head>
+<body>
+<body onload="init();"><!--Start the javascript ball rolling and connect to the mqtt broker-->
+
+
+
+<div id="container" style="height: 400px; min-width: 400px"></div><!-- this the placeholder for the chart-->
+
+<div id="container1" style="height: 400px; min-width: 400px"></div><!-- this the placeholder for the chart-->
+
+
+<h3>LED Control</h3>
+<button style="background-color: greenyellow; border-color: greenyellow; color:black" onclick="send_mqtt_msg(1)" name="btn1"> ON</button>
+<button style="background-color: red; border-color: red; color: white;" onclick="send_mqtt_msg(0)" name="btn2"> OFF</button>
+	</body>
+	<div id=pubmsg></div>
+</html>

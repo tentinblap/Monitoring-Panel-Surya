@@ -1,0 +1,61 @@
+import json
+import MySQLdb
+import base64
+import paho.mqtt.client as mqtt
+# SQL DB Name
+db_database = "cobadht"
+db_hostname = "localhost"
+db_username = "root"
+db_password = "12345678"
+
+broker="localhost"
+port=9001
+pub_topic="topic/temp"
+pub_topic1="topic/hum"
+#===============================================================
+#===============================================================
+# Functions to push Sensor Data into Database
+def on_publish(client,userdata,result):             #create function for callback
+    print("data published \n")
+    pass
+  
+def sensor_Data_Handler(jsonData):
+    #Parse Data 
+    Data = base64.b64decode(json.loads(jsonData.decode())['data'])
+    print(Data)
+    rxdata = json.loads(jsonData.decode())['rxInfo']
+    rssi = rxdata[0]['rssi']
+    snr = rxdata[0]['loRaSNR']
+    fcnt = json.loads(jsonData.decode())['fCnt']
+    devicename = json.loads(jsonData.decode())['deviceName']
+    print(devicename)
+    print(snr)
+    print(fcnt)
+    #jsonLoc=rxdata[0]['location']
+    #dataLoc = json.loads(jsonData.decode())['jsonLoc']
+    #dataLatitude = float(dataLoc['latitude'])
+    #print (dataLatitude)
+    jsonSensor = json.loads(base64.b64decode(json.loads(jsonData.decode())['data']))
+    #print(jsonSensor['temp'])
+    #dataTemp = float(jsonSensor['t'])
+    dataTemp = float(jsonSensor['Temperature'])
+    dataHum = float(jsonSensor['Humidity'])
+    #dataRSSI = float(rssi)
+    #dataSNR = float(snr)
+    #dataFCNT = float(fcnt)
+    conn = MySQLdb.connect(db_hostname, db_username, db_password, db_database)
+    cur = conn.cursor()
+    try:
+        cur.execute("insert into node2 (temp, humidity) values (%s, %s)", ([dataTemp], [dataHum]))
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        return None
+    conn.commit()
+    print ("Inserted Data into Database.")
+    print ("")
+    client=mqtt.Client("client1",transport='websockets')
+    #client=mqtt.Client("client1")
+    client.on_publish = on_publish
+    client.connect(broker,int(port))
+    client.publish(pub_topic,dataTemp)
+    client.publish(pub_topic1,dataHum)
