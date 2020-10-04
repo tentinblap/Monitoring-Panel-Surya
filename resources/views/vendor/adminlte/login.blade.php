@@ -28,13 +28,13 @@
 
                 <div class=" col-lg-5 px-lg-4 pr-lg-5">  
                     <div class="login-box bg-green">
-                        <div class="login-logo">
+                        <div class="login-logo ">
                             <a href="{{ url(config('adminlte.dashboard_url', 'grafik')) }}"><b>My</b>Panel</a>
                         </div>
                 <!-- /.login-logo -->
 
                     <div class="login-box-body bg-green ">
-                        <p class="login-box-msg">Sistem Monitoring Arus dan Tegangan pada Panel Surya</p>
+                        <p class="login-box-msg ">Sistem Monitoring Arus dan Tegangan pada Panel Surya</p>
                         <form action="{{ url(config('adminlte.login_url', 'login')) }}" method="post">
                             {{ csrf_field() }}
 
@@ -78,13 +78,14 @@
                     <br>
                     <p>
                         <a href="{{ url(config('adminlte.password_reset_url', 'password/reset')) }}" class="text-center">
-                            {{ trans('adminlte::adminlte.i_forgot_my_password') }}
+                            <!-- {{ trans('adminlte::adminlte.i_forgot_my_password') }} -->
                         </a>
                     </p>
                     @if (config('adminlte.register_url', 'register'))
                         <p>
-                            <a href="{{ url(config('adminlte.register_url', 'register')) }}" class="text-center">
-                                {{ trans('adminlte::adminlte.register_a_new_membership') }}
+                            <a href="{{ url(config('adminlte.register_url', 'register')) }}" class="text-center text-olive" >
+                                <!-- {{ trans('adminlte::adminlte.register_a_new_membership') }} -->
+                                Register a new account 
                             </a>
                         </p>
                     @endif

@@ -49,9 +49,17 @@ class NotifikasiController extends Controller
     public function store(Request $request)
     {
         $notifikasi= new Notifikasi;
-        $notifikasi->keterangan= $request->input("node")." No Voltage Detected";
-        $notifikasi->status=0;
-        $notifikasi->save();
+        if ($request->input("condition") == "novoltage"){
+            $notifikasi->keterangan= $request->input("node")." No Voltage Detected";
+            $notifikasi->status=0;
+            $notifikasi->save();
+        }
+       else {
+            $notifikasi->keterangan= $request->input("node")." Voltage Detected";
+            $notifikasi->status=0;
+            $notifikasi->save();
+       }
+        
 
         $response = [
             'msg' => 'Success',

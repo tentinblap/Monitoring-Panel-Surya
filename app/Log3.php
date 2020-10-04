@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Log3 extends Model
 {
-   protected $table='node2';
+   protected $table='node3';
 
 }

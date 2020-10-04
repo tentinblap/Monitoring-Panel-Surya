@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{ asset('/fontawesome/css/all.min.css') }}" >
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>MyPanel</title>
+    <title>@yield('title')</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- W3School 3.3.6 -->
@@ -71,7 +71,7 @@
               <span class="label label-warning" id="numbernotif">0</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have 10 notifications</li>
+              <li class="header" id="notip" ></li>
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul id="notifikasi" class="menu">
@@ -220,7 +220,7 @@
 
                             <li class="treeview {!! Request::is('panel1/*') ? 'active' : '' !!}">
                                 <a href="{{ route('grafik1') }}">
-                                    <i class="fa fa-sun-o"></i> <span>Panel 1</span>
+                                    <i class="fa fa-sun-o"></i> <span>Node 1</span>
                                     <span class="pull-right-container">
                                         <i class="fa fa-angle-left pull-right"></i>
                                     </span>
@@ -228,7 +228,7 @@
                                 <ul class="treeview-menu">
                                     <li class="{!! Request::is('panel1/grafik1') ? 'active' : '' !!}">
                                         <a href="{{ route('grafik1') }}">
-                                            <i class="fa fa-line-chart"></i> Grafik
+                                            <i class="fa fa-line-chart"></i> Graph
                                         </a>
                                     </li>
                                     <li class="{!! Request::is('panel1/log1') ? 'active' : '' !!}">
@@ -242,7 +242,7 @@
                             
                             <li class="treeview {!! Request::is('panel2/*') ? 'active' : '' !!}">
                                 <a href="{{ route('grafik2') }}">
-                                    <i class="fa fa-sun-o"></i> <span>Panel 2</span>
+                                    <i class="fa fa-sun-o"></i> <span>Node 2</span>
                                     <span class="pull-right-container">
                                         <i class="fa fa-angle-left pull-right"></i>
                                     </span>
@@ -250,7 +250,7 @@
                                 <ul class="treeview-menu">
                                     <li class="{!! Request::is('panel2/grafik2') ? 'active' : '' !!}">
                                         <a href="{{ route('grafik2') }}">
-                                            <i class="fa fa-line-chart"></i> Grafik
+                                            <i class="fa fa-line-chart"></i> Graph
 
                                         </a>
                                     </li>
@@ -263,8 +263,8 @@
                             </li>
 
                             <li class="treeview {!! Request::is('panel3/*') ? 'active' : '' !!}">
-                                <a href="{{ route('grafik1') }}">
-                                    <i class="fa fa-sun-o"></i> <span>Panel 3</span>
+                                <a href="{{ route('grafik3') }}">
+                                    <i class="fa fa-sun-o"></i> <span>Node 3</span>
                                     <span class="pull-right-container">
                                         <i class="fa fa-angle-left pull-right"></i>
                                     </span>
@@ -272,7 +272,7 @@
                                 <ul class="treeview-menu">
                                     <li class="{!! Request::is('panel3/grafik3') ? 'active' : '' !!}">
                                         <a href="{{ route('grafik3') }}">
-                                            <i class="fa fa-line-chart"></i> Grafik
+                                            <i class="fa fa-line-chart"></i> Graph
                                         </a>
                                     </li>
                                     <li class="{!! Request::is('panel3/log3') ? 'active' : '' !!}">
@@ -285,10 +285,10 @@
 
 
                             <li class="treeview {!! Request::is('logout') ? 'active' : '' !!}">
-                                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <!-- <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="fa fa-sign-out"></i>
-                                    <span>Sign out</span>
-                                </a>
+                                    <span></span> 
+                                </a> -->
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                     {{ csrf_field() }}
@@ -308,7 +308,7 @@
                                     <span>Login</span>
                                 </a>
                             </li>
-                        @endif
+                        @endif 
 
 </ul>
 <!-- /.sidebar-menu -->
@@ -402,8 +402,8 @@
        
         });
 
-        //get
-        $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               //get
+            $.get( "/api/v1/notifikasi", function( data ) {
             let notif = data.length;
             console.log("tes "+notif)
 
@@ -415,17 +415,20 @@
 
         $("#lonceng").click(function(){
             $("#notifikasi").empty()
-            $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+            $.get( "/api/v1/notifikasi", function( data ) {
             data.forEach(function(notif){
                 $("#notifikasi").append('<li><a href="#">'+notif.keterangan+'</a></li>');
             })
         });
-            $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+        
+            $.get( "/api/v1/notifikasi", function( data ) {
+                let notip = data.length;
+                document.getElementById('notip').innerHTML =`You have ${notip} notifications` ;
                 $.ajax({
-                        url: 'http://192.168.43.172:8000/api/v1/notifikasi/1',
+                        url: '/api/v1/notifikasi/1',
                         type: 'PUT',
                         success: function(response) {
-                            $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+                            $.get( "/api/v1/notifikasi", function( data ) {
                             let notif1 = data.length;
                             document.getElementById('numbernotif').innerHTML = notif1;
                              });

@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 
-@section('title', 'My Panel | Panel 2')
+
+@section('title', 'My Panel | Home')
 
 @section('content_header')
     <h1>Monitoring Rumah</h1>
@@ -146,11 +147,13 @@ function onMessageArrived(message) {
            
            if(message.payloadString=='1'){
                //get
-               $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               $.get( "/api/v1/notifikasi", function( data ) {
                    console.log(data)
                    let notif = data.length;
+                  
                    document.getElementById('numbernotif').innerHTML = notif;
-               });
+                  
+                  });
               
                
            }
@@ -160,7 +163,7 @@ function onMessageArrived(message) {
            
            if(message.payloadString=='1'){
                //get
-               $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               $.get( "/api/v1/notifikasi", function( data ) {
                    console.log(data)
                    let notif = data.length;
                    document.getElementById('numbernotif').innerHTML = notif;
@@ -174,7 +177,7 @@ function onMessageArrived(message) {
            
            if(message.payloadString=='1'){
                //get
-               $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               $.get( "/api/v1/notifikasi", function( data ) {
                    console.log(data)
                    let notif = data.length;
                    document.getElementById('numbernotif').innerHTML = notif;
@@ -258,7 +261,7 @@ $(document).ready(function() {
               <div class="box box-success">
 
                 <div class="box-header with-border ">
-                    <h3 class="box-title">Live Data Panel 1</h3>
+                    <h3 class="box-title">Live Data Node 1</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         <!-- <div class="btn-group"> -->
@@ -271,7 +274,7 @@ $(document).ready(function() {
                             <li><a href="#">Separated link</a></li>
                         </ul> -->
                         <!-- </div> -->
-                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        
                     </div>
                 </div>
                 
@@ -295,7 +298,7 @@ $(document).ready(function() {
                                       </div>
                                        <div class="col-sm-4 border-right" >
                                       <h3 id='node1_v3'>0</h3>
-                                      <p>Appliance </p>
+                                      <p>Output </p>
                                       </div>
                                      
                                   </div>
@@ -310,6 +313,8 @@ $(document).ready(function() {
                         <div class="col-sm-12 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-green">
+                            
+                            <a href="#" class="small-box-footer">Current</a>
                                 <div class="inner">
                                   <div class="row">
                                  <div class="col-sm-4 border-right" >
@@ -322,7 +327,7 @@ $(document).ready(function() {
                                       </div>
                                        <div class="col-sm-4 border-right" >
                                       <h3 id='node1_c3'>0</h3>
-                                      <p>Appliance</p>
+                                      <p>Output</p>
                                       </div>
                                      
                                   </div>
@@ -331,7 +336,6 @@ $(document).ready(function() {
                                   </div>
                                 </div>
                             
-                            <a href="#" class="small-box-footer">Current</a>
                           </div>
                         </div>
 
@@ -341,14 +345,18 @@ $(document).ready(function() {
                                 <div class="inner">
                                   <div class="row">
                                     <div class="col-sm-6 border-right" >
-                                      <h3 id='node1_light'>0</h3>
+                                      <h3 id='node1_light'>-</h3>
                                       <p>Light</p>
                                      
 
                                     </div>
 
                                     <div class="col-sm-6 border-right" >
-                                      <h3 id='node1_node'>0</h3>
+                                    @if ($node->status==0)
+                                      <h3 id='node1_node'>off</h3>
+                                    @else
+                                      <h3 id='node1_node'>on</h3>
+                                    @endif
                                       <p>Node</p>
                                     </div>
                               
@@ -374,7 +382,7 @@ $(document).ready(function() {
               <div class="box box-success">
 
                 <div class="box-header with-border ">
-                    <h3 class="box-title">Live Data Panel 2</h3>
+                    <h3 class="box-title">Live Data Node 2</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         <!-- <div class="btn-group"> -->
@@ -387,7 +395,7 @@ $(document).ready(function() {
                             <li><a href="#">Separated link</a></li>
                         </ul> -->
                         <!-- </div> -->
-                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                 
                     </div>
                 </div>
                 
@@ -397,6 +405,7 @@ $(document).ready(function() {
                         <div class="col-sm-12 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-blue">
+                            <a href="#" class="small-box-footer">Voltage </a>
                                 <div class="inner">
                                   <div class="row">
                                  <div class="col-sm-4 border-right" >
@@ -409,7 +418,7 @@ $(document).ready(function() {
                                       </div>
                                        <div class="col-sm-4 border-right" >
                                       <h3 id='node2_v3'>0</h3>
-                                      <p>Appliance</p>
+                                      <p>Output</p>
                                       </div>
                                      
                                   </div>
@@ -418,13 +427,14 @@ $(document).ready(function() {
                                   </div>
                                 </div>
                             
-                            <a href="#" class="small-box-footer">Voltage </a>
+                            
                           </div>
                         </div>
 
                         <div class="col-sm-12 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-green">
+                            <a href="#" class="small-box-footer">Current </a>
                                 <div class="inner">
                                   <div class="row">
                                  <div class="col-sm-4 border-right" >
@@ -437,7 +447,7 @@ $(document).ready(function() {
                                       </div>
                                        <div class="col-sm-4 border-right" >
                                       <h3 id='node2_c3'>0</h3>
-                                      <p>Appliance</p>
+                                      <p>Output</p>
                                       </div>
                                      
                                   </div>
@@ -446,7 +456,7 @@ $(document).ready(function() {
                                   </div>
                                 </div>
                             
-                            <a href="#" class="small-box-footer">Current </a>
+                            
                           </div>
                         </div>
 
@@ -456,14 +466,18 @@ $(document).ready(function() {
                                 <div class="inner">
                                   <div class="row">
                                     <div class="col-sm-6 border-right" >
-                                      <h3 id='node2_light'>ON</h3>
+                                      <h3 id='node2_light'>-</h3>
                                       <p>Light</p>
                                      
 
                                     </div>
 
                                     <div class="col-sm-6 border-right" >
-                                      <h3 id='node2_node'>ON</h3>
+                                    @if ($node2->status==0)
+                                      <h3 id='node2_node'>off</h3>
+                                    @else
+                                      <h3 id='node2_node'>on</h3>
+                                    @endif
                                       <p>Node</p>
                                     </div>
                               
@@ -488,7 +502,7 @@ $(document).ready(function() {
               <div class="box box-success">
 
                 <div class="box-header with-border ">
-                    <h3 class="box-title">Live Data Panel 3</h3>
+                    <h3 class="box-title">Live Data Node 3</h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         <!-- <div class="btn-group"> -->
@@ -501,7 +515,7 @@ $(document).ready(function() {
                             <li><a href="#">Separated link</a></li>
                         </ul> -->
                         <!-- </div> -->
-                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                       
                     </div>
                 </div>
                 
@@ -511,6 +525,7 @@ $(document).ready(function() {
                         <div class="col-sm-12 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-blue">
+                            <a href="#" class="small-box-footer">Voltage </a>
                                 <div class="inner">
                                   <div class="row">
                                  <div class="col-sm-4 border-right" >
@@ -523,7 +538,7 @@ $(document).ready(function() {
                                       </div>
                                        <div class="col-sm-4 border-right" >
                                       <h3 id='node3_v3'>0</h3>
-                                      <p>Appliance</p>
+                                      <p>Output</p>
                                       </div>
                                      
                                   </div>
@@ -532,13 +547,14 @@ $(document).ready(function() {
                                   </div>
                                 </div>
                             
-                            <a href="#" class="small-box-footer">Voltage </a>
+                            
                           </div>
                         </div>
 
                         <div class="col-sm-12 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-green">
+                            <a href="#" class="small-box-footer">Current</a>
                                 <div class="inner">
                                   <div class="row">
                                  <div class="col-sm-4 border-right" >
@@ -551,7 +567,7 @@ $(document).ready(function() {
                                       </div>
                                        <div class="col-sm-4 border-right" >
                                       <h3 id='node3_c3'>0</h3>
-                                      <p>Appliance</p>
+                                      <p>Output</p>
                                       </div>
                                      
                                   </div>
@@ -560,7 +576,7 @@ $(document).ready(function() {
                                   </div>
                                 </div>
                             
-                            <a href="#" class="small-box-footer">Current</a>
+                            
                           </div>
                         </div>
 
@@ -570,14 +586,18 @@ $(document).ready(function() {
                                 <div class="inner">
                                   <div class="row">
                                     <div class="col-sm-6 border-right" >
-                                      <h3 id='node3_light'>ON</h3>
+                                      <h3 id='node3_light'>-</h3>
                                       <p>Light</p>
                                      
 
                                     </div>
 
                                     <div class="col-sm-6 border-right" >
-                                      <h3 id='node3_node'>ON</h3>
+                                    @if ($node3->status==0)
+                                      <h3 id='node3_node'>off</h3>
+                                    @else
+                                      <h3 id='node3_node'>on</h3>
+                                    @endif
                                       <p>Node</p>
                                     </div>
                               

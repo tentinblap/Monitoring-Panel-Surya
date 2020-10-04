@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 
-@section('title', 'My Panel | Panel 1')
+@section('title', 'My Panel | Node 3')
 
 @section('content_header')
     <h1>Monitoring Rumah</h1>
@@ -10,7 +10,7 @@
 @section('content')
 <script type="text/javascript">
 
-
+	var nodeoff=false
 	var chart; // global variuable for chart
 	var dataTopics = new Array();
     var dataTopics1 = new Array();
@@ -72,19 +72,19 @@ function onMessageArrived(message) {
 		    //create new data series for the chart
 			var newseries1 = {
 		            id: x,
-		            name: "node3/v1",
+		            name: "solar panel",
 		            data: [],
 		            visible: false
 					};
 			var newseries2 = {
 					id: y,
-					name:"node3/v2",
+					name:"battery",
 					data: [],
 					visible: false
 					};
 			var newseries3 = {
 					id: z,
-					name: "node3/v3",
+					name: "output",
 					data: [],
 					visible: false
 					};
@@ -109,19 +109,19 @@ function onMessageArrived(message) {
 			
 			var newseries4 = {
 					id: a,
-					name: "node3/c1",
+					name: "solar panel",
 					data: [],
 					visible: false
 					};
       var newseries5 = {
           id: b,
-          name: "node3/c2",
+          name: "battery",
           data: [],
           visible: false
           };
       var newseries6 = {
           id: c,
-          name: "node3/c3",
+          name: "output",
           data: [],
           visible: false
           };
@@ -146,7 +146,15 @@ function onMessageArrived(message) {
 		var c = dataTopics1.indexOf("node3/c3"); //get the index no
 		// var y = dataTopics.indexOf(message.destinationName); //get the index no of the topic from the array
 		var myEpoch = new Date().getTime(); //get current epoch time
-			if(message.destinationName=="node3/v1"){
+		if(nodeoff){
+				$.ajax({ url: '/api/v1/devices/node3', method: 'PUT', data: 'status=0'})
+            	.then(function(response) {
+					nodeoff=false
+					$('#OFF').attr('disabled','disabled');
+               console.log(response);
+            });
+			}
+			else if(message.destinationName=="node3/v1"){
 				var thenum = message.payloadString.replace( /^\D+/g, ''); //remove any text spaces from the message
 				var plotMqtt = [myEpoch, Number(thenum)]; //create the array
 				if (isNumber(thenum)) { //check if it is a real number and not text
@@ -207,7 +215,7 @@ function onMessageArrived(message) {
            
 		   if(message.payloadString=='1'){
 			   //get
-			   $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+			   $.get( "/api/v1/notifikasi", function( data ) {
 				   console.log(data)
 				   let notif = data.length;
 				   document.getElementById('numbernotif').innerHTML = notif;
@@ -222,7 +230,7 @@ function onMessageArrived(message) {
 		   
 		   if(message.payloadString=='1'){
 			   //get
-			   $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+			   $.get( "/api/v1/notifikasi", function( data ) {
 				   console.log(data)
 				   let notif = data.length;
 				   document.getElementById('numbernotif').innerHTML = notif;
@@ -237,7 +245,7 @@ function onMessageArrived(message) {
 		   
 		   if(message.payloadString=='1'){
 			   //get
-			   $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+			   $.get( "/api/v1/notifikasi", function( data ) {
 				   console.log(data)
 				   let notif = data.length;
 				   document.getElementById('numbernotif').innerHTML = notif;
@@ -259,12 +267,16 @@ function onMessageArrived(message) {
 		document.getElementById("pubmsg").innerHTML = "Trying to connect...";
 	}
 
-		if (state==0){
+		else if (state==0){
 			client = new Paho.MQTT.Client(MQTTbroker, MQTTport,"");
 			client.connect({onSuccess:onConnect_OFF});
 			document.getElementById("pubmsg").innerHTML = "Trying to connect...";
 		}	
-		
+		else if (state==2){
+			client = new Paho.MQTT.Client(MQTTbroker, MQTTport,"");
+			client.connect({onSuccess:onConnect_OFFNODE});
+			document.getElementById("pubmsg").innerHTML = "Trying to connect...";
+		}	
 	}
 	function onConnect_ON() {
 		document.getElementById("pubmsg").innerHTML = "New connection made...";
@@ -281,6 +293,16 @@ function onMessageArrived(message) {
 
 		var MQTTpubTopic3= "application/1/device/f5dd1bd33f84993e/tx"; 
 		var mqtt_msg ='{     "confirmed": true,     "fPort": 3,     "data": "MA==" }';
+		message = new Paho.MQTT.Message(mqtt_msg);
+		message.destinationName = MQTTpubTopic3;
+		client.send(message);
+		document.getElementById("pubmsg").innerHTML = "topic:" + MQTTpubTopic3  + " " + mqtt_msg + " ...sent";
+	}
+	function onConnect_OFFNODE(){
+		document.getElementById("pubmsg").innerHTML = "New connection made...";
+
+		var MQTTpubTopic3= "application/1/device/f5dd1bd33f84993e/tx"; 
+		var mqtt_msg ='{     "confirmed": true,     "fPort": 3,     "data": "c2h1dGRvd24K" }';
 		message = new Paho.MQTT.Message(mqtt_msg);
 		message.destinationName = MQTTpubTopic3;
 		client.send(message);
@@ -351,7 +373,7 @@ $(document).ready(function() {
 	            minPadding: 0.2,
 	            maxPadding: 0.2,
 	            title: {
-	                text: 'Value',
+	                text: 'Volt',
 	                margin: 80
 	            }
 	        },
@@ -377,7 +399,7 @@ $(document).ready(function() {
 	            minPadding: 0.2,
 	            maxPadding: 0.2,
 	            title: {
-	                text: 'Value',
+	                text: 'Ampere',
 	                margin: 80
 	            }
 	        },
@@ -402,18 +424,18 @@ $(document).ready(function() {
                 <span class="info-box-text spasi">Light Control</span>
                   <span class="info-box-number"></span>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    @if ($lampu->status==0)
-                      <button class="btn bg-yellow " onclick="send_mqtt_msg(1)"  name="btn1" id="ON1" >
+                    @if ($lampu3->status==1)
+                      <button class="btn bg-yellow " onclick="send_mqtt_msg(1)"  name="btn1" id="ON1"disabled >
                          ON
                       </button> 
-                      <button class="btn bg-yellow" onclick="send_mqtt_msg(0)" name="btn2" id="OFF1" disabled>
+                      <button class="btn bg-yellow" onclick="send_mqtt_msg(0)" name="btn2" id="OFF1" >
                          OFF
                       </button>
                     @else 
-                    <button class="btn bg-yellow " onclick="send_mqtt_msg(1)"  name="btn1" id="ON1" disabled>
+                    <button class="btn bg-yellow " onclick="send_mqtt_msg(1)"  name="btn1" id="ON1" >
                        ON
                       </button> 
-                      <button class="btn bg-yellow" onclick="send_mqtt_msg(0)" name="btn2" id="OFF1" >
+                      <button class="btn bg-yellow" onclick="send_mqtt_msg(0)" name="btn2" id="OFF1" disabled>
                          OFF
                       </button>
                       @endif
@@ -429,7 +451,7 @@ $(document).ready(function() {
 
          <div class="col-24 col-sm-12 col-md-6">
             <div class="info-box">
-              <span class="info-box-icon bg-info elevation-1 bg-orange"><i class="fas fa-power-off"></i></span>
+              <span class="info-box-icon bg-info elevation-1 bg-red"><i class="fas fa-power-off"></i></span>
 
               <div class="info-box-content">
                 <span class="info-box-text spasi">Node Control</span>
@@ -438,12 +460,12 @@ $(document).ready(function() {
                       <!-- <label class="btn bg-orange " onclick="send_mqtt_msg(1)" name="btn1" id="ON">
                         <input type="radio" name="options" id="option1" autocomplete="off" checked="Active" > ON
                       </label>  -->
-                      @if ($node->status==0)
-                      <button class="btn bg-orange" onclick="send_mqtt_msg(0)" name="btn2" id="OFF" disabled>
+                      @if ($node3->status==0)
+                      <button class="btn bg-red"  name="btn2" id="OFF" disabled>
                          OFF
                       </button>
                       @else
-                      <button class="btn bg-orange" onclick="send_mqtt_msg(0)" name="btn2" id="OFF"  >
+                      <button class="btn bg-red"  name="btn2" id="OFF"  >
                          OFF
                       </button>
                       @endif
@@ -474,7 +496,7 @@ $(document).ready(function() {
                         <li><a href="#">Separated link</a></li>
                       </ul> -->
                     <!-- </div> -->
-                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  
                   </div>
                 </div><!-- /.box-header -->
 
@@ -504,7 +526,7 @@ $(document).ready(function() {
                         <li><a href="#">Separated link</a></li>
                       </ul> -->
                     <!-- </div> -->
-                    <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                   
                   </div>
                 </div><!-- /.box-header -->
 
@@ -544,18 +566,15 @@ $(document).ready(function() {
             
             swal({
                 title: "Are you sure?",
-                text: "Once deleted, you will not be able to reactive the node!",
+                text: "Once deleted, you will not be able to reactive the node via web application!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
               })
             .then((willDelete) => {
               if (willDelete) {
-                $.ajax({ url: ' /api/v1/devices/node', method: 'PUT'})
-            .then(function(response) {
- 
-               console.log(response);
-            });
+				nodeoff=true
+				   send_mqtt_msg(2)
                 $('#OFF').attr('disabled','disabled');
                 swal("Node dimatikan", {
                   icon: "success",
@@ -579,7 +598,7 @@ $(document).ready(function() {
       $('#OFF1').click(function(){
           $('#ON1').removeAttr('disabled');
           $('#OFF1').attr('disabled','disabled');
-          $.ajax({ url: ' /api/v1/devices/lampu', method: 'PUT'})
+          $.ajax({ url: '/api/v1/devices/lampu3', method: 'PUT', data: 'status=0'})
             .then(function(response) {
                console.log(response);
             });
@@ -587,7 +606,7 @@ $(document).ready(function() {
       $('#ON1').click(function(){
           $('#OFF1').removeAttr('disabled');
           $('#ON1').attr('disabled','disabled');
-          $.ajax({ url: ' /api/v1/devices/lampu', method: 'PUT'})
+          $.ajax({ url: '/api/v1/devices/lampu3', method: 'PUT', data: 'status=1'})
             .then(function(response) {
               console.log(response);
                

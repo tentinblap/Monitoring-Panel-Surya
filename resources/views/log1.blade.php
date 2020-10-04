@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 
-@section('title', 'Smart Home')
+@section('title', 'MyPanel | Log1')
 
 @section('content_header')
     <h1>Monitoring Rumah</h1>
@@ -11,13 +11,13 @@
 @section('content')
 
 
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script src="code/highcharts.js"></script>
 <script src="code/modules/exporting.js"></script>
 <script src="code/modules/export-data.js"></script>
 <script src="mqttws31.js" type="text/javascript"></script>
 <script src="jquery.min.js" type="text/javascript"></script>
-<script src="config.js" type="text/javascript"></script>
+<script src="config.js" type="text/javascript"></script> -->
 
 
 
@@ -86,7 +86,7 @@ function onMessageArrived(message) {
            
            if(message.payloadString=='1'){
                //get
-               $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               $.get( "/api/v1/notifikasi", function( data ) {
                    console.log(data)
                    let notif = data.length;
                    document.getElementById('numbernotif').innerHTML = notif;
@@ -100,7 +100,7 @@ function onMessageArrived(message) {
            
            if(message.payloadString=='1'){
                //get
-               $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               $.get( "/api/v1/notifikasi", function( data ) {
                    console.log(data)
                    let notif = data.length;
                    document.getElementById('numbernotif').innerHTML = notif;
@@ -114,7 +114,7 @@ function onMessageArrived(message) {
            
            if(message.payloadString=='1'){
                //get
-               $.get( "http://192.168.43.172:8000/api/v1/notifikasi", function( data ) {
+               $.get( "/api/v1/notifikasi", function( data ) {
                    console.log(data)
                    let notif = data.length;
                    document.getElementById('numbernotif').innerHTML = notif;
@@ -168,8 +168,12 @@ $(document).ready(function() {
                                 <tr>
                                     <th>No</th>
                                     <th>time</th>
-                                    <th>temp</th>
-                                    <th>humidity</th>
+                                    <th>v1</th>
+                                    <th>c1</th>
+                                    <th>v2</th>
+                                    <th>c2</th>
+                                    <th>v3</th>
+                                    <th>c3</th>
                                     
                                 </tr>
                             </thead>
@@ -179,8 +183,12 @@ $(document).ready(function() {
                                     <tr>
                                         <td>{{$i}}</td>
                                         <td>{{$log->time}}</td>
-                                        <td>{{$log->temp}}</td>
-                                        <td>{{$log->humidity}}</td>
+                                        <td>{{$log->v1}}</td>
+                                        <td>{{$log->c1}}</td>
+                                        <td>{{$log->v2}}</td>
+                                        <td>{{$log->c2}}</td>
+                                        <td>{{$log->v3}}</td>
+                                        <td>{{$log->c3}}</td>
                                         
                                        
                                        

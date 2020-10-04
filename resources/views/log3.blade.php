@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 
-@section('title', 'Smart Home')
+@section('title', 'MyPanel | Log3')
 
 @section('content_header')
     <h1>Monitoring Rumah</h1>
@@ -14,7 +14,7 @@
 
 
 
-
+<br>
 <script type="text/javascript">
 
 
@@ -157,11 +157,15 @@ $(document).ready(function() {
                     <div class="box-body">
                         <table class="table table-bordered table-striped" id="laravel_datatable">
                             <thead>
-                                <tr>
+                            <tr>
                                     <th>No</th>
                                     <th>time</th>
-                                    <th>temp</th>
-                                    <th>humidity</th>
+                                    <th>v1</th>
+                                    <th>c1</th>
+                                    <th>v2</th>
+                                    <th>c2</th>
+                                    <th>v3</th>
+                                    <th>c3</th>
                                     
                                 </tr>
                             </thead>
@@ -171,8 +175,12 @@ $(document).ready(function() {
                                     <tr>
                                         <td>{{$i}}</td>
                                         <td>{{$log->time}}</td>
-                                        <td>{{$log->temp}}</td>
-                                        <td>{{$log->humidity}}</td>
+                                        <td>{{$log->v1}}</td>
+                                        <td>{{$log->c1}}</td>
+                                        <td>{{$log->v2}}</td>
+                                        <td>{{$log->c2}}</td>
+                                        <td>{{$log->v3}}</td>
+                                        <td>{{$log->c3}}</td>
                                         
                                        
                                        

@@ -82,7 +82,7 @@
                             <br>
                             <p>
                                 <a href="{{ url(config('adminlte.login_url', 'login')) }}" class="text-center ">
-                                    {{ trans('adminlte::adminlte.i_already_have_a_membership') }}
+                                    {{ trans('I already have an account') }}
                                 </a>
                             </p>
                 </div>

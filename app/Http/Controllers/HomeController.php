@@ -26,7 +26,9 @@ class HomeController extends Controller
     {
         $lampu=Devices::where('nama','lampu')->first();
         $node=Devices::where('nama','node')->first();
-        return view('home')->with(compact('lampu','node'));
+        $node2=Devices::where('nama','node2')->first();
+        $node3=Devices::where('nama','node3')->first();
+        return view('home')->with(compact('lampu','node','node2','node3'));
 
         
     }

@@ -24,9 +24,9 @@ class Grafik3Controller extends Controller
      */
     public function index()
     {
-        $lampu=Devices::where('nama','lampu')->first();
-        $node=Devices::where('nama','node')->first();
-        return view('panel3')->with(compact('lampu','node'));
+        $lampu3=Devices::where('nama','lampu3')->first();
+        $node3=Devices::where('nama','node3')->first();
+        return view('panel3')->with(compact('lampu3','node3'));
 
         
     }
