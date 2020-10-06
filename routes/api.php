@@ -13,11 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('login', 'AuthController@login')->name('login');
+Route::post('register', 'AuthController@register')->name('register');
+
 Route::group(['prefix' =>'v1', 'middleware' => 'api'], function(){
+
+
+    Route::post('/register', 'Auth\RegisterController@create')->name('register');
+
     Route::resource('suhu', 'SuhuController',[
         'only' => ['store','index']
     ]);
